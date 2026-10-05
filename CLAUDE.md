@@ -18,8 +18,11 @@ uv venv --python 3.12 && uv pip install -r requirements-dev.txt
 .venv/bin/python manage.py migrate
 .venv/bin/python manage.py runserver
 .venv/bin/python manage.py test
+.venv/bin/coverage run --source=shipments --omit='*/migrations/*,*/tests.py' manage.py test && .venv/bin/coverage report -m
 .venv/bin/ruff check . && .venv/bin/ruff format --check .
 ```
+
+`.github/workflows/ci.yml` runs the same checks plus `makemigrations --check`, `npm ci`, `npm run build` and the DESIGN.md lint.
 
 Frontend (Node 20.19+ or 22.12+):
 
