@@ -81,7 +81,7 @@ function saved() {
             <th>Destination</th>
             <th class="center">ETA</th>
             <th class="center">Status</th>
-            <th><span class="sr-only">Actions</span></th>
+            <th aria-label="Actions"></th>
           </tr>
         </thead>
         <tbody>
@@ -92,7 +92,7 @@ function saved() {
             <td class="center">{{ s.eta ?? "—" }}</td>
             <td class="center">
               <span class="badge" :class="`badge-${s.status}`">{{
-                STATUS_LABELS[s.status]
+                STATUS_LABELS[s.status] ?? s.status
               }}</span>
             </td>
             <td class="actions">
