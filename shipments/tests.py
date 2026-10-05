@@ -138,3 +138,36 @@ class ShipmentApiTests(APITestCase):
     def test_delete_unknown_id_returns_404(self):
         response = self.client.delete(f"{LIST_URL}999/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # search
+
+    def search(self, term):
+        response = self.client.get(LIST_URL, {"search": term})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        return [s["reference"] for s in response.json()]
+
+    def test_search_matches_reference_origin_and_destination(self):
+        self.make(reference="KN-0001", origin="Tallinn", destination="Hamburg")
+        self.make(reference="KN-0002", origin="Riga", destination="Oslo")
+        self.assertEqual(self.search("0002"), ["KN-0002"])
+        self.assertEqual(self.search("Tallinn"), ["KN-0001"])
+        self.assertEqual(self.search("Oslo"), ["KN-0002"])
+
+    def test_search_is_partial_and_ignores_case(self):
+        self.make(reference="KN-0001", destination="Hamburg")
+        self.make(reference="KN-0002", destination="Oslo")
+        self.assertEqual(self.search("hamb"), ["KN-0001"])
+
+    def test_search_with_no_match_returns_an_empty_list(self):
+        self.make()
+        self.assertEqual(self.search("Rotterdam"), [])
+
+    def test_search_without_a_term_returns_everything(self):
+        self.make(reference="KN-0001")
+        self.make(reference="KN-0002")
+        self.assertEqual(self.search(""), ["KN-0002", "KN-0001"])
+
+    def test_search_looks_only_at_reference_origin_and_destination(self):
+        self.make(status="delivered", eta="2026-11-01")
+        self.assertEqual(self.search("delivered"), [])
+        self.assertEqual(self.search("2026"), [])
