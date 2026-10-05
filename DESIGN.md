@@ -13,7 +13,7 @@ colors:
   surface: '#FFFFFF'
   surface-subtle: '#F8FAFC'
   on-surface: '#111C2C'
-  overlay: 'rgba(0, 43, 73, 0.40)'
+  overlay: 'rgba(0, 43, 73, 0.4)'
   error: '#991B1B'
   error-container: '#FEF2F2'
   error-container-hover: '#FEE2E2'
@@ -73,7 +73,6 @@ spacing:
   space-md: 0.75rem
   space-lg: 1rem
   space-xl: 1.5rem
-  space-2xl: 2rem
   margin: 1.5rem
 components:
   page:
@@ -219,7 +218,7 @@ Numerals in tables use `font-variant-numeric: tabular-nums` so dates do not jitt
 
 ## Layout & Spacing
 
-A single fluid page inside the page `margin`, on a 4px base unit (the `space-*` scale). Toolbar controls are dense, table rows are taller. Text columns align left; reference, ETA and status are centred.
+A single fluid page inside the page `margin`, on a 4px base unit (the `space-*` scale). Toolbar controls are dense, table rows are taller. Text columns align left; reference, ETA and status are centred. Table cells never wrap: on narrow screens the table scrolls sideways inside its panel, and the toolbar wraps.
 
 ## Elevation & Depth
 
@@ -237,7 +236,7 @@ Soft precision: small radii. `base` for buttons, inputs, badges and the error ba
 
 ### Buttons
 
-Dense height, label in `label-ui`, radius `base`. Focus is a 2px offset ring in `secondary`. Hover and pressed states are the `-hover` and `-active` variants in the tokens.
+Dense height, label in `label-ui`, radius `base`. Focus is a 2px offset ring in `secondary`. Hover and pressed states are the `-hover` and `-active` variants in the tokens. While a save is in progress the button shows at 60% opacity with a not-allowed cursor.
 
 - **Primary:** "New shipment", "Save". Navy fill, white text.
 - **Secondary:** "Cancel". `surface` fill, 1px strong line, `primary` text.
@@ -254,11 +253,11 @@ Header: `table-header` type in `neutral` on `surface-subtle`, with a 1px strong 
 
 ### Inputs
 
-Text, select and date inputs share one style: 1px strong line, radius `base`, `body-md`, horizontal padding 10px. Focus: `secondary` border plus a 1px `secondary` ring. The toolbar search is the same input.
+Text, select and date inputs share one style: 1px strong line, radius `base`, `body-md`, horizontal padding 10px. Focus: `secondary` border plus a 1px `secondary` ring. The toolbar search is the same input. A field error is `error` text in `body-md` under the field, first letter capitalised, and disappears as soon as the form is edited.
 
 ### Modal
 
-Centred, `overlay` radius, over `modal-backdrop`. Title in `headline-md` and `primary`, a panel line under the header, actions right-aligned in the footer: Cancel (secondary), then Save (primary). One modal serves both create and edit.
+Centred, `overlay` radius, over `modal-backdrop`. Title in `headline-md` and `primary`, a panel line under the header, actions right-aligned in the footer: Cancel (secondary), then Save (primary). One modal serves both create and edit; below 480px it uses a single column.
 
 ### Error banner
 
