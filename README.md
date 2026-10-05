@@ -11,6 +11,23 @@ A small REST API for maintaining a list of shipments (Django REST framework) wit
 - **Tests:** 23 backend tests written test-first, 100% coverage of the application code. The frontend is checked by hand, as the assignment allows.
 - **CI:** GitHub Actions runs lint, tests with coverage, the frontend build and the design-token linter.
 
+## Assignment checklist
+
+The brief, line by line, and where each part lives. Test names are given by prefix; `python manage.py test -v 2` prints them all.
+
+| Requirement | Where | Tests in `shipments/tests.py` |
+|---|---|---|
+| Maintain a list of shipments, 4-5 fields | `shipments/models.py`: `reference`, `origin`, `destination`, `status`, `eta` | all of the below |
+| List | `GET /api/shipments/` | `test_list_*` (2) |
+| Retrieve | `GET /api/shipments/{id}/` | `test_retrieve_*` (2) |
+| Create | `POST /api/shipments/` | `test_create_*` (7) |
+| Update | `PUT` and `PATCH /api/shipments/{id}/` | `test_put_*` (3), `test_patch_*` (2) |
+| Delete | `DELETE /api/shipments/{id}/` | `test_delete_*` (2) |
+| Python, Django REST framework | Django 5.2 and DRF 3.18; a `ModelViewSet` in `shipments/views.py` behind the router in `config/urls.py` | exercised through DRF's `APITestCase` |
+| Unit tests | 23 tests, run with `python manage.py test` | 100% of 43 statements under coverage |
+| Simple frontend in Vue | `frontend/` (Vue 3, Vite): list, search, create, edit, delete | checked by hand; end-to-end tests are not required and not included |
+| *Extra: search on the list* | `?search=` on `GET /api/shipments/` | `test_search_*` (5) |
+
 ## Quick start
 
 Needs **Python 3.10+** (the minimum Django 5.2 and DRF 3.18 declare; developed and tested on 3.12) and **Node 20.19+ or 22.12+** (the range Vite 8 declares; developed on 24). Two terminals.
@@ -142,10 +159,11 @@ The tests use Django's own runner and DRF's `APITestCase`; there is no extra tes
 
 ## Not done on purpose
 
-Shortcuts with a known ceiling carry a `# ponytail:` comment in the code. This table is that ledger, plus what was left out of scope.
+Shortcuts with a known ceiling carry a `ponytail:` comment in the code. This table is that ledger, plus what was left out of scope.
 
 | Where | Shortcut | Ceiling | Revisit when |
 |---|---|---|---|
+| `shipments/models.py` | No audit trail: no `created_at`/`updated_at`, no history of status changes | With no authentication there is no author to record, so even a history could not say who | Users are added, or claims handling needs it: add timestamps and `django-simple-history` |
 | `shipments/views.py` | List is not paginated | Every call returns the whole table | The list outgrows a screen or two: enable DRF's `PageNumberPagination` |
 | `shipments/views.py` | Search uses SQLite `LIKE` | Case-insensitive for ASCII only (`ülemiste` does not find `Ülemiste`) | Move to Postgres, or Elasticsearch at volume |
 | `shipments/serializers.py` | Case-insensitive `reference` check in the serializer | Two simultaneous requests can both pass it | Add a unique constraint on `Lower("reference")` |
@@ -172,7 +190,7 @@ This project was built with AI assistance: **Claude Code** (Claude Sonnet 5.5, a
 
 **Decisions that were the author's:** using ponytail for the code, Stitch for the design, tests before code, search and CI as extras, no automated frontend tests, and trimming the design file to what the app uses.
 
-**Size.** Backend application code is 78 lines, the frontend source is 644 lines (349 of them CSS), and the tests are 188 lines.
+**Size.** Backend application code is 81 lines, the frontend source is 644 lines (349 of them CSS), and the tests are 188 lines.
 
 ## Project layout
 
