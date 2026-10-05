@@ -2,6 +2,9 @@ from django.db import models
 
 
 class Shipment(models.Model):
+    # ponytail: no created_at/updated_at and no history of status changes, and with
+    # no authentication there is no author to record either; add timestamps and
+    # django-simple-history when users or claims handling arrive.
     class Status(models.TextChoices):
         BOOKED = "booked", "Booked"
         IN_TRANSIT = "in_transit", "In transit"
