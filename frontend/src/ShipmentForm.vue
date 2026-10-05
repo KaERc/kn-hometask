@@ -27,7 +27,8 @@ const busy = ref(false);
 onMounted(() => dialog.value.showModal());
 
 // ponytail: Esc and Cancel are ignored while a save is in flight, otherwise the
-// "saved" event is lost with the unmounted form; a repeated Esc may still close it.
+// "saved" event is lost with the unmounted form; a repeated Esc may still close it,
+// and sending the request from App, where it outlives the form, would end that.
 function close() {
   if (!busy.value) dialog.value.close();
 }
