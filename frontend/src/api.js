@@ -33,7 +33,7 @@ async function request(url, options = {}) {
   return body;
 }
 
-export const listShipments = (search = "") =>
+export const listShipments = (search) =>
   request(`${BASE}?search=${encodeURIComponent(search)}`);
 
 export const deleteShipment = (id) => request(`${BASE}${id}/`, { method: "DELETE" });
