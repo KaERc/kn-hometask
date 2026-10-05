@@ -171,3 +171,18 @@ class ShipmentApiTests(APITestCase):
         self.make(status="delivered", eta="2026-11-01")
         self.assertEqual(self.search("delivered"), [])
         self.assertEqual(self.search("2026"), [])
+
+    # reference uniqueness
+
+    def test_create_rejects_a_reference_that_differs_only_in_case(self):
+        self.make(reference="KN-0001")
+        data = {**VALID, "reference": "kn-0001"}
+        response = self.client.post(LIST_URL, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("reference", response.json())
+
+    def test_put_may_change_the_case_of_its_own_reference(self):
+        shipment = self.make(reference="KN-0001")
+        data = {**VALID, "reference": "kn-0001"}
+        response = self.client.put(detail_url(shipment), data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
