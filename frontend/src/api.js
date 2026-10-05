@@ -1,6 +1,7 @@
 const BASE = "/api/shipments/";
 
-// Same values and order as Shipment.Status in the backend.
+// ponytail: kept in step with Shipment.Status by hand; read the choices from
+// OPTIONS /api/shipments/ if the statuses start to change.
 export const STATUSES = [
   { value: "booked", label: "Booked" },
   { value: "in_transit", label: "In transit" },

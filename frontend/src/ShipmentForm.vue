@@ -5,6 +5,12 @@ import { ApiError, saveShipment, STATUSES } from "./api.js";
 const props = defineProps({ shipment: { type: Object, default: null } });
 const emit = defineEmits(["saved", "close"]);
 
+const TEXT_FIELDS = [
+  { key: "reference", label: "Reference", max: 32, wide: true },
+  { key: "origin", label: "Origin", max: 100 },
+  { key: "destination", label: "Destination", max: 100 },
+];
+
 const dialog = ref(null);
 const draft = reactive({
   reference: props.shipment?.reference ?? "",
@@ -20,6 +26,12 @@ const busy = ref(false);
 // A native <dialog> brings the backdrop, focus handling and Esc for free.
 onMounted(() => dialog.value.showModal());
 
+// ponytail: Esc and Cancel are ignored while a save is in flight, otherwise the
+// "saved" event is lost with the unmounted form; a repeated Esc may still close it.
+function close() {
+  if (!busy.value) dialog.value.close();
+}
+
 async function submit() {
   if (busy.value) return;
   busy.value = true;
@@ -33,8 +45,17 @@ async function submit() {
     });
     emit("saved");
   } catch (e) {
-    if (e instanceof ApiError && e.status === 400) errors.value = e.body;
-    else failure.value = "Could not save the shipment. Try again.";
+    const body = e instanceof ApiError && e.status === 400 ? e.body : null;
+    if (body && typeof body === "object") {
+      errors.value = body;
+      // Errors under other keys (non_field_errors, detail) have no field to sit under.
+      failure.value = Object.entries(body)
+        .filter(([key]) => !(key in draft))
+        .flatMap(([, messages]) => messages)
+        .join(" ");
+    } else {
+      failure.value = "Could not save the shipment. Try again.";
+    }
   } finally {
     busy.value = false;
   }
@@ -42,7 +63,12 @@ async function submit() {
 </script>
 
 <template>
-  <dialog ref="dialog" aria-labelledby="form-title" @close="emit('close')">
+  <dialog
+    ref="dialog"
+    aria-labelledby="form-title"
+    @cancel="busy && $event.preventDefault()"
+    @close="emit('close')"
+  >
     <form @submit.prevent="submit" @input="errors = {}">
       <header>
         <h2 id="form-title">{{ shipment ? "Edit shipment" : "New shipment" }}</h2>
@@ -51,42 +77,21 @@ async function submit() {
       <div class="fields">
         <p v-if="failure" class="alert" role="alert">{{ failure }}</p>
 
-        <label class="field wide">
-          Reference
+        <label
+          v-for="f in TEXT_FIELDS"
+          :key="f.key"
+          class="field"
+          :class="{ wide: f.wide }"
+        >
+          {{ f.label }}
           <input
-            v-model="draft.reference"
+            v-model="draft[f.key]"
             required
-            maxlength="32"
-            :aria-invalid="'reference' in errors"
+            :maxlength="f.max"
+            :aria-invalid="f.key in errors"
           />
-          <span v-if="errors.reference" class="field-error">{{
-            errors.reference.join(" ")
-          }}</span>
-        </label>
-
-        <label class="field">
-          Origin
-          <input
-            v-model="draft.origin"
-            required
-            maxlength="100"
-            :aria-invalid="'origin' in errors"
-          />
-          <span v-if="errors.origin" class="field-error">{{
-            errors.origin.join(" ")
-          }}</span>
-        </label>
-
-        <label class="field">
-          Destination
-          <input
-            v-model="draft.destination"
-            required
-            maxlength="100"
-            :aria-invalid="'destination' in errors"
-          />
-          <span v-if="errors.destination" class="field-error">{{
-            errors.destination.join(" ")
+          <span v-if="errors[f.key]" class="field-error">{{
+            errors[f.key].join(" ")
           }}</span>
         </label>
 
@@ -110,9 +115,7 @@ async function submit() {
       </div>
 
       <footer>
-        <button type="button" class="btn btn-secondary" @click="dialog.close()">
-          Cancel
-        </button>
+        <button type="button" class="btn btn-secondary" @click="close">Cancel</button>
         <button type="submit" class="btn btn-primary" :aria-disabled="busy">Save</button>
       </footer>
     </form>

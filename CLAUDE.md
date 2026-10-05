@@ -24,7 +24,7 @@ uv venv --python 3.12 && uv pip install -r requirements-dev.txt
 
 `.github/workflows/ci.yml` runs the same checks plus `makemigrations --check`, `npm ci`, `npm run build` and the DESIGN.md lint.
 
-Frontend (Node 20.19+ or 22.12+):
+Frontend (Node 20.19+, or 22.12 and newer):
 
 ```bash
 cd frontend && npm install
@@ -35,5 +35,5 @@ npm run build
 Design tokens:
 
 ```bash
-npx @google/design.md lint DESIGN.md
+npx @google/design.md@0.4.0 lint DESIGN.md
 ```
