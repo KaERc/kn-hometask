@@ -154,6 +154,7 @@ The tests use Django's own runner and DRF's `APITestCase`; there is no extra tes
 - **Validation lives in the serializer**, so API clients and the UI get the same rules and the same messages. `origin ≠ destination` falls back to the stored values on PATCH.
 - **Four statuses**, the smallest set that covers a shipment's life: booked, in transit, delivered, cancelled. Adding one is a line in the model's choices, one in `api.js` and a badge style.
 - **SQLite and two Python dependencies** (Django, DRF). Nothing else is needed for the brief.
+- **No Django auth, sessions or admin.** There are no users, so DRF runs with no authentication classes and the apps behind them are not installed. A fresh database holds a single table, the shipments one.
 - **Vite and single-file components** rather than a script tag, because that is how a real Vue codebase is laid out. No router, store or TypeScript: there is one screen.
 - **The list is not paginated and the search is not debounced.** Both are deliberate shortcuts, marked in the code and listed below.
 
@@ -186,7 +187,7 @@ This project was built with AI assistance: **Claude Code** (Claude Sonnet 5.5, a
 1. **A plan first**, then the work in small branches named `subproject/epic/task` (for example `api/shipments/crud`) and merged with `--no-ff`, so `git log --graph --oneline` shows the structure.
 2. **Tests first.** For the API, each feature starts with a commit of failing tests, followed by the implementation. The red commits are in the history. The tests were also checked by deliberately breaking the code and watching the right test fail.
 3. **Verified by running it.** Every endpoint was exercised with curl against a live server; the UI was driven in a browser, including the failure paths. CI steps were run in a fresh clone.
-4. **Three review passes at the end:** a ponytail audit for over-engineering (unused Django defaults, the admin site, the ASGI entry point and repeated markup were removed), an AI code review (10 findings, 9 fixed, among them a form crash on a non-JSON error response and errors that were shown nowhere; one skipped: an automated check that CSS and `DESIGN.md` agree), and a security review (no high-confidence findings).
+4. **Three review passes at the end:** a ponytail audit for over-engineering, run twice (the admin site, the auth, sessions and content-types apps with their tables, the ASGI entry point, unused settings and repeated markup were removed), an AI code review (10 findings, 9 fixed, among them a form crash on a non-JSON error response and errors that were shown nowhere; one skipped: an automated check that CSS and `DESIGN.md` agree), and a security review (no high-confidence findings).
 
 **Decisions that were the author's:** using ponytail for the code, Stitch for the design, tests before code, search and CI as extras, no automated frontend tests, and trimming the design file to what the app uses.
 
@@ -207,6 +208,6 @@ requirements*.txt     pinned Python dependencies (runtime, and dev: coverage, ru
 
 ## Notes for reviewers
 
-- **Development setup.** `DEBUG` is on, `SECRET_KEY` is the generated development placeholder, and there is no authentication, so every endpoint is open. That is fine for a local run and not for exposure to a network.
+- **Development setup.** `DEBUG` is on, `SECRET_KEY` is the generated development placeholder, and there is no authentication (DRF is configured without authentication classes), so every endpoint is open. That is fine for a local run and not for exposure to a network.
 - The frontend build is not served by Django; run the two dev servers as in the quick start.
 - `CLAUDE.md` is the assistant's briefing for this repository (rules and commands). It is kept because it is part of how the project was built.
