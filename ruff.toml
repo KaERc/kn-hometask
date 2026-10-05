@@ -1,0 +1,5 @@
+extend-exclude = ["*/migrations"]
+
+[lint]
+# Django Meta options (ordering, fields) are class-level lists by convention.
+ignore = ["RUF012"]
