@@ -189,7 +189,7 @@ This project was built with AI assistance: **Claude Code** (Claude Sonnet 5.5, a
 3. **Verified by running it.** Every endpoint was exercised with curl against a live server; the UI was driven in a browser, including the failure paths. CI steps were run in a fresh clone.
 4. **Three review passes at the end:** a ponytail audit for over-engineering, run twice (the admin site, the auth, sessions and content-types apps with their tables, the ASGI entry point, unused settings and repeated markup were removed), an AI code review (10 findings, 9 fixed, among them a form crash on a non-JSON error response and errors that were shown nowhere; one skipped: an automated check that CSS and `DESIGN.md` agree), and a security review (no high-confidence findings).
 
-**Decisions that were the author's:** using ponytail for the code, Stitch for the design, tests before code, search and CI as extras, no automated frontend tests, and trimming the design file to what the app uses.
+**Decisions that were the author's**, taken before the plan and while it was being drawn up (adjustments made along the way are not listed here): using ponytail for the code, Stitch for the design, tests before code, search and CI as extras, no automated frontend tests, and trimming the design file to what the app uses.
 
 **Size.** Backend application code is 81 lines, the frontend source is 644 lines (349 of them CSS), and the tests are 188 lines.
 
